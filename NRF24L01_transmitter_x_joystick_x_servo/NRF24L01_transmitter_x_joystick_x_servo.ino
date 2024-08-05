@@ -1,5 +1,5 @@
 
-// UNO
+// UNO PINOUT
 // 5v -> VCC, MAKE SURE YOU HAVE ADAPTER!!!
 // GND -> GND
 // 8 -> CE
@@ -7,6 +7,17 @@
 // 11 -> MOSI
 // 12 -> MISO
 // 13 -> SCK
+// UNO PINOUT
+
+// UNO NANO PINOUT
+// 5v -> VCC, MAKE SURE YOU HAVE ADAPTER!!!
+// GND -> GND
+// 8 -> CE
+// 9 -> CSN
+// 11 -> MOSI
+// 12 -> MISO
+// 13 -> SCK
+// UNO NANO PINOUT
 
 // ANALOG
 // GND -> GND
@@ -30,7 +41,7 @@ const int yPin = A1;
 //create an RF24 object
 RF24 radio(8, 10);   // CE, CSN
 
-const byte address[6] = "11009";
+const byte address[6] = "11229";
 
 int intReadings[3] = {0,0,0};
 
@@ -42,6 +53,11 @@ void setup() {
 void loop() {
   readAnalog();
   sendData();
+  for (int i = 0; i < 3; i++) {
+    Serial.print(intReadings[i]);
+    if (i < 2) Serial.print(", ");
+  }
+  Serial.println();
   delay(10);
 }
 

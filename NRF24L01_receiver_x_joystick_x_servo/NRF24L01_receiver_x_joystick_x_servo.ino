@@ -7,6 +7,17 @@
 // 11 -> MOSI
 // 12 -> MISO
 // 13 -> SCK
+// UNO
+
+// UNO NANO PINOUT
+// 5v -> VCC, MAKE SURE YOU HAVE ADAPTER!!!
+// GND -> GND
+// 8 -> CE
+// 9 -> CSN
+// 11 -> MOSI
+// 12 -> MISO
+// 13 -> SCK
+// UNO NANO PINOUT
 
 // ANALOG
 // GND -> GND
@@ -32,9 +43,9 @@ const int servoXPin = 5;
 const int servoYPin = 6;
 
 //create an RF24 object
-RF24 radio(8, 10);  // CE, CSN
+RF24 radio(8, 9);  // CE, CSN
 
-const byte address[6] = "11009";
+const byte address[6] = "11229";
 
 int intReadings[3] = {0,0,0};
 
@@ -85,6 +96,6 @@ void writeServoes() {
     int angleX = map(intReadings[0], -1023, 1023, 0, 180);
     int angleY = map(intReadings[1], -1023, 1023, 0, 180);
 
-    servoX.write(180);
-    servoY.write(180);
+    servoX.write(angleX);
+    servoY.write(angleY);
 }
