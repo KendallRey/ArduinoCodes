@@ -1,21 +1,49 @@
+// Needed Libraries
+// - Servo by Michael Margolis, Arduino
+// - RF24 by TMRh20
+
+// NRF24L01 -> UNO PINOUT
+// 5v -> VCC, MAKE SURE YOU HAVE ADAPTER!!!
+// GND -> GND
+// 8 -> CE
+// 10 -> CSN
+// 11 -> MOSI
+// 12 -> MISO
+// 13 -> SCK
+// UNO PINOUT
+
+// NRF24L01 -> UNO NANO PINOUT
+// 5v -> VCC, MAKE SURE YOU HAVE ADAPTER!!!
+// GND -> GND
+// 8 -> CE
+// 9 -> CSN
+// 11 -> MOSI
+// 12 -> MISO
+// 13 -> SCK
+// UNO NANO PINOUT
+
+// ANALOG PINOUT
+// GND -> GND
+// VCC -> 5V
+// X PIN -> A0 (Your choice!)
+// Y PIN -> A1 (Your choice!)
+
+// SERVO PINOUT
+// GND -> GND
+// VCC -> 5V
+// X PIN -> D5 PWM (Your choice!)
+// Y PIN -> D6 PWM (Your choice!)
 
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
 #include <Servo.h>
 
-
-int potValue;  // value from the analog pin
-int escValue;  // value to send to the ESC
-
-//create an RF24 object
 RF24 radio(8, 9);  // CE, CSN
 
 const byte address[6] = "11229";
 
 int intReadings[3] = {0,0,0};
-
-
 
 class ServoLeg {
   private:
@@ -60,10 +88,10 @@ class ServoLeg {
     }
 
     void moveDelayed(int speed) {
+
       unsigned long currentMillis = millis();
 
       if (currentMillis - previousMillis >= delaySpeed) {
-        // Save the last time you updated the servo position
         previousMillis = currentMillis;
         if(speed <= 2 && speed >= -2){
           pos = center;
@@ -75,7 +103,6 @@ class ServoLeg {
           else if (speed < -1) {
             pos -= increment;
           }
-          
           if (pos >= max || pos <= min) {
             increment = -increment;
           }
@@ -111,7 +138,6 @@ unsigned long previousMillis = 0;
 int delaySpeed = 10; 
 
 void setupServo() {
-
   legFL.init(5, 90, false, 30, 150);
   legFR.init(6, 90, true, 30, 150);
 }
@@ -125,13 +151,7 @@ void setup() {
 
 void loop() {
   readData();
-
-  // Serial.println(potValue);
-  // int val = map(potValue, -1023, 1023, -20, 20);
   moveLegs();
-  // servoX.write(angleX);
-  // moveServo(angleX);
-  // delay(delaySpeed);
 }
 
 
@@ -142,7 +162,6 @@ void moveLegs() {
   unsigned long currentMillis = millis();
 
   if (currentMillis - previousMillis >= delaySpeed) {
-      // Save the last time you updated the servo position
       previousMillis = currentMillis;
       legFL.move(angleX);
       legFR.move(angleX);
@@ -168,52 +187,5 @@ void readData() {
     for (int i = 0; i < 3; i++) {
       intReadings[i] = data[i];
     }
-  }
-}
-
-void moveServo(int speed) {
-  unsigned long currentMillis = millis();
-
-  if (currentMillis - previousMillis >= delaySpeed) {
-    // Save the last time you updated the servo position
-    previousMillis = currentMillis;
-    if(speed <= 2 && speed >= -2){
-      pos = 90;
-    } else {
-
-      if(speed > 1) {
-        pos += increment;
-      }
-      else if (speed < -1) {
-        pos -= increment;
-      }
-      
-      if (pos >= 180 || pos <= 0) {
-        increment = -increment;
-      }
-    }
-      Serial.println(pos);
-      servoX.write(pos);
-  }
-}
-
-
-void moveServo2(int speed) {
-  if(speed <= 2 && speed >= -2){
-      pos = 90;
-    } else {
-
-    if(speed > 1) {
-      pos += increment;
-    }
-    else if (speed < -1) {
-      pos -= increment;
-    }
-    
-    if (pos >= 180 || pos <= 0) {
-      increment = -increment;
-    }
-    Serial.println(pos);
-    servoX.write(pos);
   }
 }

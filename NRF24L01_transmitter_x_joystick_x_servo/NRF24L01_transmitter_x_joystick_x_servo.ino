@@ -1,5 +1,8 @@
+// Needed Libraries
+// - Servo by Michael Margolis, Arduino
+// - RF24 by TMRh20
 
-// UNO PINOUT
+// NRF24L01 -> UNO PINOUT
 // 5v -> VCC, MAKE SURE YOU HAVE ADAPTER!!!
 // GND -> GND
 // 8 -> CE
@@ -9,7 +12,7 @@
 // 13 -> SCK
 // UNO PINOUT
 
-// UNO NANO PINOUT
+// NRF24L01 -> UNO NANO PINOUT
 // 5v -> VCC, MAKE SURE YOU HAVE ADAPTER!!!
 // GND -> GND
 // 8 -> CE
@@ -19,13 +22,13 @@
 // 13 -> SCK
 // UNO NANO PINOUT
 
-// ANALOG
+// ANALOG PINOUT
 // GND -> GND
 // VCC -> 5V
 // X PIN -> A0 (Your choice!)
 // Y PIN -> A1 (Your choice!)
 
-// SERVO
+// SERVO PINOUT
 // GND -> GND
 // VCC -> 5V
 // X PIN -> D5 PWM (Your choice!)
