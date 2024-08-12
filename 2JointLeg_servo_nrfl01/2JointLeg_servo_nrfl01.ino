@@ -67,7 +67,7 @@ class ServoLeg {
     #pragma region Sub Servo
 
     Servo subServo;
-    int subservoRestPos = 90;
+    int subServoRestPos = 90;
     int subServoPos = 0;
     int subServoStartPos = 180;
     int subServoEndPos = 0;
@@ -91,6 +91,33 @@ class ServoLeg {
     unsigned long previousMillis = 0;
     int increment = 1;
 
+    #pragma region Main Servo Functions
+
+    void attachMainServo (int pin, int restPos) {
+      mainServo.attach(pin);
+      mainServoRestPos = restPos;
+    }
+
+    void setMainServoMaxAndMinPos (int minPos, int maxPos) {
+      mainServoMax = maxPos;
+      mainServoMin = minPos;
+    }
+
+    #pragma endregion
+
+    #pragma region Sub Servo Functions
+
+    void attachSubServo (int pin, int restPos) {
+      subServo.attach(pin);
+      subServoRestPos = restPos;
+    }
+
+    void setSubServoStartAndEndPos (int startPos, int endPos) {
+      subServoStartPos = startPos;
+      subServoEndPos = endPos;
+    }
+
+    #pragma endregion
 
   public:
 
@@ -100,73 +127,61 @@ class ServoLeg {
       subServoEndPos = 0;
     }
 
+    #pragma region Init Main Servo
+
     void initMain(int _servoPin, int _centerValue) {
-      mainServo.attach(_servoPin);
-      mainServoRestPos = _centerValue;
-      mainServoPos = _centerValue;
+      attachSubServo(_servoPin, _centerValue);
     }
   
     void initMain(int _servoPin, int _centerValue, bool reverseStart) {
-      mainServo.attach(_servoPin);
-      mainServoRestPos = _centerValue;
-      mainServoPos = _centerValue;
+      attachSubServo(_servoPin, _centerValue);
       if(reverseStart) {
         increment = -increment;
       }
     }
 
     void initMain(int _servoPin, int _centerValue, bool reverseStart, int _min, int _max) {
-      mainServo.attach(_servoPin);
-      mainServoRestPos = _centerValue;
-      mainServoPos = _centerValue;
-      mainServoMax = _max;
-      mainServoMin = _min;
+      attachSubServo(_servoPin, _centerValue);
+      setMainServoMaxAndMinPos(_min, _max);
     }
+
+    #pragma endregion
   
+    #pragma region Init Sub Servo
+
     void initSub(int _servoPin, int _centerValue) {
-      subServo.attach(_servoPin);
-      subservoRestPos = _centerValue;
-      mainServoPos = _centerValue;
+      attachSubServo(_servoPin, _centerValue);
     }
   
     void initSub(int _servoPin, int _centerValue, bool reverseStart) {
-      subServo.attach(_servoPin);
-      subservoRestPos = _centerValue;
-      mainServoPos = _centerValue;
+      attachSubServo(_servoPin, _centerValue);
       isSubServoReverseStart = reverseStart;
       if(reverseStart){
-        subServoStartPos = 0;
-        subServoEndPos = 180;
+        setSubServoStartAndEndPos(0, 180);
       }
     }
 
     void initSub(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos) {
-      subServo.attach(_servoPin);
-      subservoRestPos = _centerValue;
-      mainServoPos = _centerValue;
+      attachSubServo(_servoPin, _centerValue);
       if(reverseStart){
-        subServoStartPos = endPos;
-        subServoEndPos = startPos;
+        setSubServoStartAndEndPos(endPos, startPos);
       }
       else {
-        subServoStartPos = startPos;
-        subServoEndPos = endPos;
+        setSubServoStartAndEndPos(startPos, endPos);
       }
     }
 
     void initSub(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos, int offset) {
-      subServo.attach(_servoPin);
-      subservoRestPos = _centerValue;
-      mainServoPos = _centerValue;
+      attachSubServo(_servoPin, _centerValue);
       if(reverseStart){
-        subServoStartPos = endPos;
-        subServoEndPos = startPos;
+        setSubServoStartAndEndPos(endPos, startPos);
       }
       else {
-        subServoStartPos = startPos;
-        subServoEndPos = endPos;
+        setSubServoStartAndEndPos(startPos, endPos);
       }
     }
+
+    #pragma endregion
 
     void moveDelayed(int speed) {
 
@@ -195,7 +210,7 @@ class ServoLeg {
     void move(int speed) {
       if(speed <= 2 && speed >= -2){
           mainServoPos = mainServoRestPos;
-          subServoPos = subservoRestPos;
+          subServoPos = subServoRestPos;
         } else {
           
           if(speed > 1) {
