@@ -124,13 +124,31 @@ class ServoLeg {
       }
     }
 
-    void initSub(int _servoPin, int _centerValue, bool reverseStart, int offset) {
+    void initSub(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos) {
       subServo.attach(_servoPin);
       subRestPos = _centerValue;
       mainPos = _centerValue;
       if(reverseStart){
-        subStartPos = 0;
-        subEndPos = 180;
+        subStartPos = endPos;
+        subEndPos = startPos;
+      }
+      else {
+        subStartPos = startPos;
+        subEndPos = endPos;
+      }
+    }
+
+    void initSub(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos, int offset) {
+      subServo.attach(_servoPin);
+      subRestPos = _centerValue;
+      mainPos = _centerValue;
+      if(reverseStart){
+        subStartPos = endPos;
+        subEndPos = startPos;
+      }
+      else {
+        subStartPos = startPos;
+        subEndPos = endPos;
       }
     }
 
@@ -196,8 +214,8 @@ int delaySpeed = 10;
 void setupServo() {
   // legFL.initMain(5, 90, false, 30, 150);
   // legFR.initMain(6, 90, true, 30, 150);
-  legFL.initSub(5, 90, false);
-  legFR.initSub(6, 90, true);
+  legFL.initSub(5, 90, false, 30, 150);
+  legFR.initSub(6, 90, true, 30, 150);
 }
 
 void setup() {
