@@ -45,13 +45,31 @@ const byte address[6] = "11229";
 
 int intReadings[3] = {0,0,0};
 
+// Test Direct with Analog Connection
+void testRead () {
+  int analogX = analogRead(A1);
+  intReadings[1] = map(analogX, 0, 1023, -1023, 1023);
+}
+
 class ServoLeg {
   private:
-    Servo mainServo; 
-    int center = 90;
+    Servo mainServo;
+    Servo subServo;
+
+    int mainRestPos = 90;
+    int subRestPos = 90;
+
+    bool isSubReverseStart = false;
+  
+    int subStartPos = 180;
+    int subEndPos = 0;
+  
     int delaySpeed = 10;
   
-    int pos = 0;
+    int mainPos = 0;
+    int subPos = 0;
+    
+
     unsigned long previousMillis = 0;
     int increment = 1;
 
@@ -61,30 +79,59 @@ class ServoLeg {
   public:
 
     ServoLeg() {
-      pos = 90;
+      mainPos = 90;
+      subStartPos = 180;
+      subEndPos = 0;
     }
 
-    void init(int _servoPin, int _centerValue) {
+    void initMain(int _servoPin, int _centerValue) {
       mainServo.attach(_servoPin);
-      center = _centerValue;
-      pos = _centerValue;
+      mainRestPos = _centerValue;
+      mainPos = _centerValue;
     }
   
-    void init(int _servoPin, int _centerValue, bool reverseStart) {
+    void initMain(int _servoPin, int _centerValue, bool reverseStart) {
       mainServo.attach(_servoPin);
-      center = _centerValue;
-      pos = _centerValue;
+      mainRestPos = _centerValue;
+      mainPos = _centerValue;
       if(reverseStart) {
         increment = -increment;
       }
     }
 
-    void init(int _servoPin, int _centerValue, bool reverseStart, int _min, int _max) {
+    void initMain(int _servoPin, int _centerValue, bool reverseStart, int _min, int _max) {
       mainServo.attach(_servoPin);
-      center = _centerValue;
-      pos = _centerValue;
+      mainRestPos = _centerValue;
+      mainPos = _centerValue;
       max = _max;
       min = _min;
+    }
+  
+    void initSub(int _servoPin, int _centerValue) {
+      subServo.attach(_servoPin);
+      subRestPos = _centerValue;
+      mainPos = _centerValue;
+    }
+  
+    void initSub(int _servoPin, int _centerValue, bool reverseStart) {
+      subServo.attach(_servoPin);
+      subRestPos = _centerValue;
+      mainPos = _centerValue;
+      isSubReverseStart = reverseStart;
+      if(reverseStart){
+        subStartPos = 0;
+        subEndPos = 180;
+      }
+    }
+
+    void initSub(int _servoPin, int _centerValue, bool reverseStart, int offset) {
+      subServo.attach(_servoPin);
+      subRestPos = _centerValue;
+      mainPos = _centerValue;
+      if(reverseStart){
+        subStartPos = 0;
+        subEndPos = 180;
+      }
     }
 
     void moveDelayed(int speed) {
@@ -94,40 +141,49 @@ class ServoLeg {
       if (currentMillis - previousMillis >= delaySpeed) {
         previousMillis = currentMillis;
         if(speed <= 2 && speed >= -2){
-          pos = center;
+          mainPos = mainRestPos;
         } else {
 
           if(speed > 1) {
-            pos += increment;
+            mainPos += increment;
           }
           else if (speed < -1) {
-            pos -= increment;
+            mainPos -= increment;
           }
-          if (pos >= max || pos <= min) {
+          if (mainPos >= max || mainPos <= min) {
             increment = -increment;
           }
         }
-        mainServo.write(pos);
+        mainServo.write(mainPos);
       }
     }
 
     void move(int speed) {
       if(speed <= 2 && speed >= -2){
-          pos = center;
+          mainPos = mainRestPos;
+          subPos = subRestPos;
         } else {
-
+          
           if(speed > 1) {
-            pos += increment;
+            mainPos += increment;
           }
           else if (speed < -1) {
-            pos -= increment;
+            mainPos -= increment;
           }
-          
-          if (pos >= max || pos <= min) {
+          if (isSubReverseStart){
+            subPos = 180;
+          }
+          if (mainPos >= max || mainPos <= min) {
+            if(subPos == subStartPos)
+              subPos = subEndPos;
+            else
+              subPos = subStartPos;
             increment = -increment;
           }
+
         }
-      mainServo.write(pos);
+      mainServo.write(mainPos);
+      subServo.write(subPos);
     }
 };
 
@@ -138,8 +194,10 @@ unsigned long previousMillis = 0;
 int delaySpeed = 10; 
 
 void setupServo() {
-  legFL.init(5, 90, false, 30, 150);
-  legFR.init(6, 90, true, 30, 150);
+  // legFL.initMain(5, 90, false, 30, 150);
+  // legFR.initMain(6, 90, true, 30, 150);
+  legFL.initSub(5, 90, false);
+  legFR.initSub(6, 90, true);
 }
 
 void setup() {
@@ -150,7 +208,8 @@ void setup() {
 }
 
 void loop() {
-  readData();
+  // readData();
+  testRead();
   moveLegs();
 }
 
