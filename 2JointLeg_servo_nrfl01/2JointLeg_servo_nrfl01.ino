@@ -53,47 +53,63 @@ void testRead () {
 
 class ServoLeg {
   private:
+
+    #pragma region Main Servo
+
     Servo mainServo;
+    int mainServoRestPos = 90;
+    int mainServoMax = 180;
+    int mainServoMin = 0;
+    int mainServoPos = 0;
+
+    #pragma endregion
+
+    #pragma region Sub Servo
+
     Servo subServo;
+    int subservoRestPos = 90;
+    int subServoPos = 0;
+    int subServoStartPos = 180;
+    int subServoEndPos = 0;
+    bool isSubServoReverseStart = false;
 
-    int mainRestPos = 90;
-    int subRestPos = 90;
+    #pragma endregion
 
-    bool isSubReverseStart = false;
+    #pragma region Foot Servo
+
+    Servo footServo;
+    int footServoRestPos = 90;
+    int footServoPos = 0;
+    int footServoStartPos = 180;
+    int footServoEndPos = 0;
+
+    #pragma endregion
   
-    int subStartPos = 180;
-    int subEndPos = 0;
   
     int delaySpeed = 10;
-  
-    int mainPos = 0;
-    int subPos = 0;
-    
 
     unsigned long previousMillis = 0;
     int increment = 1;
 
-    int max = 180;
-    int min = 0;
 
   public:
 
     ServoLeg() {
-      mainPos = 90;
-      subStartPos = 180;
-      subEndPos = 0;
+      mainServoPos = 90;
+      subServoStartPos = 180;
+      subServoEndPos = 0;
     }
 
     void initMain(int _servoPin, int _centerValue) {
       mainServo.attach(_servoPin);
-      mainRestPos = _centerValue;
-      mainPos = _centerValue;
+      mainServoRestPos = _centerValue;
+      mainServoPos = _centerValue;
     }
   
     void initMain(int _servoPin, int _centerValue, bool reverseStart) {
       mainServo.attach(_servoPin);
-      mainRestPos = _centerValue;
-      mainPos = _centerValue;
+      mainServoRestPos = _centerValue;
+      mainServoPos = _centerValue;
       if(reverseStart) {
         increment = -increment;
       }
@@ -101,54 +117,54 @@ class ServoLeg {
 
     void initMain(int _servoPin, int _centerValue, bool reverseStart, int _min, int _max) {
       mainServo.attach(_servoPin);
-      mainRestPos = _centerValue;
-      mainPos = _centerValue;
-      max = _max;
-      min = _min;
+      mainServoRestPos = _centerValue;
+      mainServoPos = _centerValue;
+      mainServoMax = _max;
+      mainServoMin = _min;
     }
   
     void initSub(int _servoPin, int _centerValue) {
       subServo.attach(_servoPin);
-      subRestPos = _centerValue;
-      mainPos = _centerValue;
+      subservoRestPos = _centerValue;
+      mainServoPos = _centerValue;
     }
   
     void initSub(int _servoPin, int _centerValue, bool reverseStart) {
       subServo.attach(_servoPin);
-      subRestPos = _centerValue;
-      mainPos = _centerValue;
-      isSubReverseStart = reverseStart;
+      subservoRestPos = _centerValue;
+      mainServoPos = _centerValue;
+      isSubServoReverseStart = reverseStart;
       if(reverseStart){
-        subStartPos = 0;
-        subEndPos = 180;
+        subServoStartPos = 0;
+        subServoEndPos = 180;
       }
     }
 
     void initSub(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos) {
       subServo.attach(_servoPin);
-      subRestPos = _centerValue;
-      mainPos = _centerValue;
+      subservoRestPos = _centerValue;
+      mainServoPos = _centerValue;
       if(reverseStart){
-        subStartPos = endPos;
-        subEndPos = startPos;
+        subServoStartPos = endPos;
+        subServoEndPos = startPos;
       }
       else {
-        subStartPos = startPos;
-        subEndPos = endPos;
+        subServoStartPos = startPos;
+        subServoEndPos = endPos;
       }
     }
 
     void initSub(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos, int offset) {
       subServo.attach(_servoPin);
-      subRestPos = _centerValue;
-      mainPos = _centerValue;
+      subservoRestPos = _centerValue;
+      mainServoPos = _centerValue;
       if(reverseStart){
-        subStartPos = endPos;
-        subEndPos = startPos;
+        subServoStartPos = endPos;
+        subServoEndPos = startPos;
       }
       else {
-        subStartPos = startPos;
-        subEndPos = endPos;
+        subServoStartPos = startPos;
+        subServoEndPos = endPos;
       }
     }
 
@@ -159,49 +175,49 @@ class ServoLeg {
       if (currentMillis - previousMillis >= delaySpeed) {
         previousMillis = currentMillis;
         if(speed <= 2 && speed >= -2){
-          mainPos = mainRestPos;
+          mainServoPos = mainServoRestPos;
         } else {
 
           if(speed > 1) {
-            mainPos += increment;
+            mainServoPos += increment;
           }
           else if (speed < -1) {
-            mainPos -= increment;
+            mainServoPos -= increment;
           }
-          if (mainPos >= max || mainPos <= min) {
+          if (mainServoPos >= mainServoMax || mainServoPos <= mainServoMin) {
             increment = -increment;
           }
         }
-        mainServo.write(mainPos);
+        mainServo.write(mainServoPos);
       }
     }
 
     void move(int speed) {
       if(speed <= 2 && speed >= -2){
-          mainPos = mainRestPos;
-          subPos = subRestPos;
+          mainServoPos = mainServoRestPos;
+          subServoPos = subservoRestPos;
         } else {
           
           if(speed > 1) {
-            mainPos += increment;
+            mainServoPos += increment;
           }
           else if (speed < -1) {
-            mainPos -= increment;
+            mainServoPos -= increment;
           }
-          if (isSubReverseStart){
-            subPos = 180;
+          if (isSubServoReverseStart){
+            subServoPos = 180;
           }
-          if (mainPos >= max || mainPos <= min) {
-            if(subPos == subStartPos)
-              subPos = subEndPos;
+          if (mainServoPos >= mainServoMax || mainServoPos <= mainServoMin) {
+            if(subServoPos == subServoStartPos)
+              subServoPos = subServoEndPos;
             else
-              subPos = subStartPos;
+              subServoPos = subServoStartPos;
             increment = -increment;
           }
 
         }
-      mainServo.write(mainPos);
-      subServo.write(subPos);
+      mainServo.write(mainServoPos);
+      subServo.write(subServoPos);
     }
 };
 
