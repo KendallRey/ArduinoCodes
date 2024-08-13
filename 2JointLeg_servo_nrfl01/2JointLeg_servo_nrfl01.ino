@@ -69,7 +69,16 @@ class ServoLeg {
     const int FOOT_START_POS = 180;
     const int FOOT_END_POS = 0;
 
-    const int SPEED = 2;
+    const int SPEED = 1;
+
+    #pragma endregion
+
+    #pragma region Holder Variables
+
+    int delaySpeed = 10;
+    bool isMoving = false;
+    unsigned long previousMillis = 0;
+    int increment = SPEED;
 
     #pragma endregion
 
@@ -103,12 +112,6 @@ class ServoLeg {
     int footServoEndPos = FOOT_END_POS;
 
     #pragma endregion
-  
-  
-    int delaySpeed = 10;
-
-    unsigned long previousMillis = 0;
-    int increment = SPEED;
 
     #pragma region Main Servo Functions
 
@@ -279,8 +282,12 @@ class ServoLeg {
       if(speed <= 2 && speed >= -2){
           mainServoPos = mainServoRestPos;
           subServoPos = subServoRestPos;
+          isMoving = false;
         } else {
-          
+          if (!isMoving) {
+            isMoving = true;
+            increment = SPEED;
+          }
           if(speed > 1) {
             mainServoPos += increment;
           }
@@ -292,15 +299,18 @@ class ServoLeg {
           }
           if (mainServoPos >= mainServoMax || mainServoPos <= mainServoMin) {
             // 
-            if(subServoPos == subServoStartPos)
+            if(subServoPos == subServoStartPos) {
               subServoPos = subServoEndPos;
-            else
+            }
+            else {
               subServoPos = subServoStartPos;
+            }
             // Reverse Main Servo Rotation
             increment = -increment;
           }
 
         }
+      Serial.println(mainServoPos);
       mainServo.write(mainServoPos);
       subServo.write(subServoPos);
     }
@@ -314,8 +324,8 @@ int delaySpeed = 10;
 
 void setupServo() {
   legFL.initMain(5, 90, false, 40, 140);
-  legFR.initMain(6, 90, true, 40, 140);
-  // legFL.initSub(5, 90, false, 30, 150);
+  // legFR.initMain(6, 90, true, 40, 140);
+  legFL.initSub(6, 90, false, 30, 150);
   // legFR.initSub(6, 90, true, 30, 150);
   // legFL.initFoot(5, 90, false, 30, 150);
   // legFR.initFoot(6, 90, true, 30, 150);
@@ -344,7 +354,7 @@ void moveLegs() {
   if (currentMillis - previousMillis >= delaySpeed) {
       previousMillis = currentMillis;
       legFL.move(angleX);
-      legFR.move(angleX);
+      // legFR.move(angleX);
     }
 };
 
