@@ -77,6 +77,7 @@ class ServoLeg {
 
     int delaySpeed = 10;
     bool isMoving = false;
+    bool isInitialReverse = true;
     unsigned long previousMillis = 0;
     int increment = SPEED;
 
@@ -200,6 +201,7 @@ class ServoLeg {
     void initSub(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos) {
       attachSubServo(_servoPin, _centerValue);
       if(reverseStart){
+      isSubServoReverseStart = reverseStart;
         setSubServoStartAndEndPos(endPos, startPos);
       }
       else {
@@ -209,6 +211,7 @@ class ServoLeg {
 
     void initSub(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos, int offset) {
       attachSubServo(_servoPin, _centerValue);
+      isSubServoReverseStart = reverseStart;
       if(reverseStart){
         setSubServoStartAndEndPos(endPos, startPos);
       }
@@ -283,6 +286,7 @@ class ServoLeg {
           mainServoPos = mainServoRestPos;
           subServoPos = subServoRestPos;
           isMoving = false;
+          isInitialReverse = true;
         } else {
           if (!isMoving) {
             isMoving = true;
@@ -293,10 +297,12 @@ class ServoLeg {
           }
           else if (speed < -1) {
             mainServoPos -= increment;
+            if(isInitialReverse) {
+              subServoPos = subServoEndPos;
+              isInitialReverse = false;
+            }
           }
-          if (isSubServoReverseStart){
-            subServoPos = 180;
-          }
+
           if (mainServoPos >= mainServoMax || mainServoPos <= mainServoMin) {
 
             if(subServoPos == subServoStartPos) {
@@ -305,6 +311,7 @@ class ServoLeg {
             else {
               subServoPos = subServoStartPos;
             }
+
             if(footServoPos == footServoStartPos) {
               footServoPos = footServoEndPos;
             }
@@ -330,9 +337,9 @@ unsigned long previousMillis = 0;
 int delaySpeed = 10; 
 
 void setupServo() {
-  legFL.initMain(5, 90, false, 40, 140);
+  // legFL.initMain(5, 90, false, 40, 140);
   // legFR.initMain(6, 90, true, 40, 140);
-  legFL.initSub(6, 90, false, 30, 150);
+  legFL.initSub(5, 90, false, 30, 150);
   // legFR.initSub(6, 90, true, 30, 150);
   legFL.initFoot(7, 90, false, 30, 150);
   // legFR.initFoot(6, 90, true, 30, 150);
