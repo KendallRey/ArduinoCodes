@@ -54,23 +54,40 @@ void testRead () {
 class ServoLeg {
   private:
 
+    #pragma region Default Servo Values
+
+    const int MAIN_REST_POS = 90;
+    const int MAIN_MAX = 180;
+    const int MAIN_MIN = 0;
+    const int MAIN_POS = 90;
+
+    const int SUB_REST_POS = 90;
+    const int SUB_START_POS = 180;
+    const int SUB_END_POS = 0;
+
+    const int FOOT_REST_POS = 90;
+    const int FOOT_START_POS = 180;
+    const int FOOT_END_POS = 0;
+
+    #pragma endregion
+
     #pragma region Main Servo
 
     Servo mainServo;
-    int mainServoRestPos = 90;
-    int mainServoMax = 180;
-    int mainServoMin = 0;
-    int mainServoPos = 0;
+    int mainServoRestPos = MAIN_REST_POS;
+    int mainServoMax = MAIN_MAX;
+    int mainServoMin = MAIN_MIN;
+    int mainServoPos = MAIN_POS;
 
     #pragma endregion
 
     #pragma region Sub Servo
 
     Servo subServo;
-    int subServoRestPos = 90;
-    int subServoPos = 0;
-    int subServoStartPos = 180;
-    int subServoEndPos = 0;
+    int subServoRestPos = SUB_REST_POS;
+    int subServoPos = SUB_REST_POS;
+    int subServoStartPos = SUB_START_POS;
+    int subServoEndPos = SUB_END_POS;
     bool isSubServoReverseStart = false;
 
     #pragma endregion
@@ -78,10 +95,10 @@ class ServoLeg {
     #pragma region Foot Servo
 
     Servo footServo;
-    int footServoRestPos = 90;
-    int footServoPos = 0;
-    int footServoStartPos = 180;
-    int footServoEndPos = 0;
+    int footServoRestPos = FOOT_REST_POS;
+    int footServoPos = FOOT_REST_POS;
+    int footServoStartPos = FOOT_START_POS;
+    int footServoEndPos = FOOT_END_POS;
 
     #pragma endregion
   
