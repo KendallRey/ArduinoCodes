@@ -69,6 +69,8 @@ class ServoLeg {
     const int FOOT_START_POS = 180;
     const int FOOT_END_POS = 0;
 
+    const int SPEED = 2;
+
     #pragma endregion
 
     #pragma region Main Servo
@@ -106,7 +108,7 @@ class ServoLeg {
     int delaySpeed = 10;
 
     unsigned long previousMillis = 0;
-    int increment = 1;
+    int increment = SPEED;
 
     #pragma region Main Servo Functions
 
@@ -115,9 +117,9 @@ class ServoLeg {
       mainServoRestPos = restPos;
     }
 
-    void setMainServoMaxAndMinPos (int minPos, int maxPos) {
-      mainServoMax = maxPos;
+    void setMainServoMinMaxPos (int minPos, int maxPos) {
       mainServoMin = minPos;
+      mainServoMax = maxPos;
     }
 
     #pragma endregion
@@ -136,6 +138,20 @@ class ServoLeg {
 
     #pragma endregion
 
+    #pragma region Foot Servo Functions
+
+    void attachFootServo (int pin, int restPos) {
+      footServo.attach(pin);
+      footServoRestPos = restPos;
+    }
+
+    void setFootServoStartAndEndPos (int startPos, int endPos) {
+      footServoStartPos = startPos;
+      footServoEndPos = endPos;
+    }
+
+    #pragma endregion
+
   public:
 
     ServoLeg() {
@@ -147,19 +163,19 @@ class ServoLeg {
     #pragma region Init Main Servo
 
     void initMain(int _servoPin, int _centerValue) {
-      attachSubServo(_servoPin, _centerValue);
+      attachMainServo(_servoPin, _centerValue);
     }
   
     void initMain(int _servoPin, int _centerValue, bool reverseStart) {
-      attachSubServo(_servoPin, _centerValue);
+      attachMainServo(_servoPin, _centerValue);
       if(reverseStart) {
         increment = -increment;
       }
     }
 
     void initMain(int _servoPin, int _centerValue, bool reverseStart, int _min, int _max) {
-      attachSubServo(_servoPin, _centerValue);
-      setMainServoMaxAndMinPos(_min, _max);
+      attachMainServo(_servoPin, _centerValue);
+      setMainServoMinMaxPos(_min, _max);
     }
 
     #pragma endregion
@@ -195,6 +211,41 @@ class ServoLeg {
       }
       else {
         setSubServoStartAndEndPos(startPos, endPos);
+      }
+    }
+
+    #pragma endregion
+
+    #pragma region Init Foot Servo
+
+    void initFoot(int _servoPin, int _centerValue) {
+      attachFootServo(_servoPin, _centerValue);
+    }
+  
+    void initFoot(int _servoPin, int _centerValue, bool reverseStart) {
+      attachFootServo(_servoPin, _centerValue);
+      if(reverseStart){
+        setFootServoStartAndEndPos(0, 180);
+      }
+    }
+
+    void initFoot(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos) {
+      attachFootServo(_servoPin, _centerValue);
+      if(reverseStart){
+        setFootServoStartAndEndPos(endPos, startPos);
+      }
+      else {
+        setFootServoStartAndEndPos(startPos, endPos);
+      }
+    }
+
+    void initFoot(int _servoPin, int _centerValue, bool reverseStart, int startPos, int endPos, int offset) {
+      attachFootServo(_servoPin, _centerValue);
+      if(reverseStart){
+        setFootServoStartAndEndPos(endPos, startPos);
+      }
+      else {
+        setFootServoStartAndEndPos(startPos, endPos);
       }
     }
 
@@ -240,10 +291,12 @@ class ServoLeg {
             subServoPos = 180;
           }
           if (mainServoPos >= mainServoMax || mainServoPos <= mainServoMin) {
+            // 
             if(subServoPos == subServoStartPos)
               subServoPos = subServoEndPos;
             else
               subServoPos = subServoStartPos;
+            // Reverse Main Servo Rotation
             increment = -increment;
           }
 
@@ -260,10 +313,12 @@ unsigned long previousMillis = 0;
 int delaySpeed = 10; 
 
 void setupServo() {
-  // legFL.initMain(5, 90, false, 30, 150);
-  // legFR.initMain(6, 90, true, 30, 150);
-  legFL.initSub(5, 90, false, 30, 150);
-  legFR.initSub(6, 90, true, 30, 150);
+  legFL.initMain(5, 90, false, 40, 140);
+  legFR.initMain(6, 90, true, 40, 140);
+  // legFL.initSub(5, 90, false, 30, 150);
+  // legFR.initSub(6, 90, true, 30, 150);
+  // legFL.initFoot(5, 90, false, 30, 150);
+  // legFR.initFoot(6, 90, true, 30, 150);
 }
 
 void setup() {
