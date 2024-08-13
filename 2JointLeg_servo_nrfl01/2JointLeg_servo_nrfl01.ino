@@ -298,12 +298,18 @@ class ServoLeg {
             subServoPos = 180;
           }
           if (mainServoPos >= mainServoMax || mainServoPos <= mainServoMin) {
-            // 
+
             if(subServoPos == subServoStartPos) {
               subServoPos = subServoEndPos;
             }
             else {
               subServoPos = subServoStartPos;
+            }
+            if(footServoPos == footServoStartPos) {
+              footServoPos = footServoEndPos;
+            }
+            else {
+              footServoPos = footServoStartPos;
             }
             // Reverse Main Servo Rotation
             increment = -increment;
@@ -313,6 +319,7 @@ class ServoLeg {
       Serial.println(mainServoPos);
       mainServo.write(mainServoPos);
       subServo.write(subServoPos);
+      footServo.write(footServoPos);
     }
 };
 
@@ -327,7 +334,7 @@ void setupServo() {
   // legFR.initMain(6, 90, true, 40, 140);
   legFL.initSub(6, 90, false, 30, 150);
   // legFR.initSub(6, 90, true, 30, 150);
-  // legFL.initFoot(5, 90, false, 30, 150);
+  legFL.initFoot(7, 90, false, 30, 150);
   // legFR.initFoot(6, 90, true, 30, 150);
 }
 
