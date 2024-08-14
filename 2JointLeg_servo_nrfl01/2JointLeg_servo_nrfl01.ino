@@ -285,6 +285,7 @@ class ServoLeg {
       if(speed <= 2 && speed >= -2){
           mainServoPos = mainServoRestPos;
           subServoPos = subServoRestPos;
+          footServoPos = footServoRestPos;
           isMoving = false;
           isInitialReverse = true;
         } else {
@@ -299,6 +300,7 @@ class ServoLeg {
             mainServoPos -= increment;
             if(isInitialReverse) {
               subServoPos = subServoEndPos;
+              footServoPos = footServoEndPos;
               isInitialReverse = false;
             }
           }
@@ -323,7 +325,7 @@ class ServoLeg {
           }
 
         }
-      Serial.println(mainServoPos);
+      // Serial.println(mainServoPos);
       mainServo.write(mainServoPos);
       subServo.write(subServoPos);
       footServo.write(footServoPos);
@@ -339,9 +341,9 @@ int delaySpeed = 10;
 void setupServo() {
   // legFL.initMain(5, 90, false, 40, 140);
   // legFR.initMain(6, 90, true, 40, 140);
-  legFL.initSub(5, 90, false, 30, 150);
+  // legFL.initSub(5, 90, false, 30, 150);
   // legFR.initSub(6, 90, true, 30, 150);
-  legFL.initFoot(7, 90, false, 30, 150);
+  legFL.initFoot(5, 90, false, 30, 150);
   // legFR.initFoot(6, 90, true, 30, 150);
 }
 
@@ -364,7 +366,7 @@ void moveLegs() {
   int angleX = map(intReadings[1], -1023, 1023, -20, 20);
 
   unsigned long currentMillis = millis();
-
+  Serial.println(angleX);
   if (currentMillis - previousMillis >= delaySpeed) {
       previousMillis = currentMillis;
       legFL.move(angleX);
