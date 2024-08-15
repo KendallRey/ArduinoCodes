@@ -47,8 +47,12 @@ int intReadings[3] = {0,0,0};
 
 // Test Direct with Analog Connection
 void testRead () {
+  int analogY = analogRead(A0);
   int analogX = analogRead(A1);
-  intReadings[1] = map(analogX, 0, 1023, -1023, 1023);
+  intReadings[0] = map(analogY, 0, 1023, -1023, 1023);
+  intReadings[1] = map(analogX, 0, 1023, 1023, -1023);
+  // Serial.println(analogY);
+  // Serial.println(analogX);
 }
 
 class ServoLeg {
@@ -77,6 +81,7 @@ class ServoLeg {
 
     int delaySpeed = 10;
     bool isMoving = false;
+    bool isMainServoReverse = false;
     bool isInitialReverse = true;
     unsigned long previousMillis = 0;
     int increment = SPEED;
@@ -172,13 +177,12 @@ class ServoLeg {
   
     void initMain(int _servoPin, int _centerValue, bool reverseStart) {
       attachMainServo(_servoPin, _centerValue);
-      if(reverseStart) {
-        increment = -increment;
-      }
+      isMainServoReverse = reverseStart;
     }
 
     void initMain(int _servoPin, int _centerValue, bool reverseStart, int _min, int _max) {
       attachMainServo(_servoPin, _centerValue);
+      isMainServoReverse = reverseStart;
       setMainServoMinMaxPos(_min, _max);
     }
 
@@ -281,7 +285,11 @@ class ServoLeg {
       }
     }
 
-    void move(int speed) {
+    void move(int _speed) {
+      int speed = _speed;
+      if(isMainServoReverse)
+        speed = speed * -1;
+
       if(speed <= 2 && speed >= -2){
           mainServoPos = mainServoRestPos;
           subServoPos = subServoRestPos;
@@ -294,10 +302,10 @@ class ServoLeg {
             increment = SPEED;
           }
           if(speed > 1) {
-            mainServoPos += increment;
+              mainServoPos += increment;
           }
           else if (speed < -1) {
-            mainServoPos -= increment;
+              mainServoPos -= increment;
             if(isInitialReverse) {
               subServoPos = subServoEndPos;
               footServoPos = footServoEndPos;
@@ -339,11 +347,11 @@ unsigned long previousMillis = 0;
 int delaySpeed = 10; 
 
 void setupServo() {
-  // legFL.initMain(5, 90, false, 40, 140);
+  legFL.initMain(5, 90, false, 40, 140);
   // legFR.initMain(6, 90, true, 40, 140);
-  // legFL.initSub(5, 90, false, 30, 150);
+  legFL.initSub(6, 90, false, 30, 150);
   // legFR.initSub(6, 90, true, 30, 150);
-  legFL.initFoot(5, 90, false, 30, 150);
+  legFL.initFoot(7, 90, false, 30, 150);
   // legFR.initFoot(6, 90, true, 30, 150);
 }
 
@@ -363,10 +371,10 @@ void loop() {
 
 void moveLegs() {
   
-  int angleX = map(intReadings[1], -1023, 1023, -20, 20);
+  int angleX = map(intReadings[1], -1023, 1023, 20, -20);
 
   unsigned long currentMillis = millis();
-  Serial.println(angleX);
+  // Serial.println(angleX);
   if (currentMillis - previousMillis >= delaySpeed) {
       previousMillis = currentMillis;
       legFL.move(angleX);
@@ -379,11 +387,12 @@ void setupRadio() {
   radio.openReadingPipe(0, address);
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
-  if(isBegin)
-    Serial.println("Start Listening Init");
-  else
-    Serial.println("Failed Listening Init");
-  delay(500);
+  // if(isBegin)
+  //   Serial.println("Start Listening Init");
+  // else
+  //   Serial.println("Failed Listening Init");
+  // delay(500);
+  Serial.println("Start.....");
 }
 
 void readData() {
