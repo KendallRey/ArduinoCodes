@@ -2,5 +2,5 @@
     "configuration": "cpu=atmega328",
     "board": "arduino:avr:nano",
     "sketch": "2JointLeg_servo_nrfl01\\2JointLeg_servo_nrfl01.ino",
-    "port": "COM7"
+    "port": "COM4"
 }
